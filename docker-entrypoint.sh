@@ -1,14 +1,15 @@
 #!/bin/sh
 set -eu
 
-# Render injeta PORT. O n8n escuta em N8N_PORT.
+# Render roteia para PORT. No n8n isso é N8N_PORT.
+# Com EXPOSE 5678 + PORT=5678 no Blueprint, os dois ficam iguais.
 export N8N_LISTEN_ADDRESS="${N8N_LISTEN_ADDRESS:-0.0.0.0}"
 export N8N_PORT="${PORT:-${N8N_PORT:-5678}}"
+export PORT="${PORT:-$N8N_PORT}"
 
 export TZ="${TZ:-America/Sao_Paulo}"
 export GENERIC_TIMEZONE="${GENERIC_TIMEZONE:-America/Sao_Paulo}"
 
-# URL pública do serviço no Render (https://<servico>.onrender.com)
 if [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
   base="${RENDER_EXTERNAL_URL%/}"
   export WEBHOOK_URL="${WEBHOOK_URL:-${base}/}"
@@ -20,7 +21,8 @@ if [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
   export N8N_HOST="${N8N_HOST:-$host}"
 fi
 
-# Proxy TLS do Render: um hop na frente do n8n.
 export N8N_PROXY_HOPS="${N8N_PROXY_HOPS:-1}"
+
+echo "n8n bind ${N8N_LISTEN_ADDRESS}:${N8N_PORT} webhook=${WEBHOOK_URL:-unset}"
 
 exec n8n

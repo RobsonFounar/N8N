@@ -13,22 +13,37 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /healthz
     envVars:
       # NÃO altere N8N_ENCRYPTION_KEY depois do primeiro deploy:
       # credenciais criptografadas ficam ilegíveis se a chave mudar.
       - key: N8N_ENCRYPTION_KEY
         generateValue: true
+      # A Render roteia o HTTP para PORT. n8n escuta 5678 por padrão.
+      - key: PORT
+        value: "5678"
+      - key: N8N_PORT
+        value: "5678"
       - key: TZ
         value: America/Sao_Paulo
       - key: GENERIC_TIMEZONE
         value: America/Sao_Paulo
       - key: N8N_LISTEN_ADDRESS
         value: "0.0.0.0"
+      - key: N8N_HOST
+        value: n8n-wwzm.onrender.com
+      - key: WEBHOOK_URL
+        value: https://n8n-wwzm.onrender.com/
+      - key: N8N_EDITOR_BASE_URL
+        value: https://n8n-wwzm.onrender.com/
       - key: N8N_PROTOCOL
         value: https
       - key: N8N_PROXY_HOPS
         value: "1"
+      # Task runner extra estoura os 512 MB do plano free.
+      - key: N8N_RUNNERS_ENABLED
+        value: "false"
+      - key: NODE_OPTIONS
+        value: "--max-old-space-size=384"
       - key: DB_TYPE
         value: postgresdb
       - key: DB_POSTGRESDB_HOST
@@ -64,5 +79,3 @@ databases:
     plan: free
     databaseName: n8n
     user: n8n
-    # Só a rede interna do Render (o web service n8n) acessa o banco.
-    ipAllowList: []

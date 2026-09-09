@@ -37,9 +37,9 @@ O entrypoint liga o n8n em `0.0.0.0:$PORT` (porta injetada pelo Render) e define
 
 ## Primeiro acesso
 
-1. Abra a URL `https://<servico>.onrender.com` do web service.
+1. Abra https://n8n-wwzm.onrender.com
 2. Crie a conta owner do n8n no wizard inicial.
-3. Confira Settings → n8n URL / webhooks (deve refletir o domínio `onrender.com`).
+3. Confira Settings → n8n URL / webhooks (deve ser `https://n8n-wwzm.onrender.com/`).
 
 ## Arquivos
 
