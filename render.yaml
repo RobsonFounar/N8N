@@ -1,8 +1,7 @@
 # n8n self-hosted no Render (este repositório apenas — não misturar com outros apps).
 #
-# Plano free no Blueprint:
-# - Web service free dorme após 15 minutos de inatividade (cold start na próxima request).
-# - Postgres grátis expira em 30 dias. Faça upgrade antes disso se for usar de verdade.
+# Banco: Supabase project "n8n" (ref togomiokchincpaspwao), via Session pooler IPv4.
+# O host direto db.*.supabase.co é IPv6 e a Render não alcança.
 #
 # Apply: https://dashboard.render.com/blueprint/new?repo=https://github.com/RobsonFounar/N8N
 
@@ -18,7 +17,6 @@ services:
       # credenciais criptografadas ficam ilegíveis se a chave mudar.
       - key: N8N_ENCRYPTION_KEY
         generateValue: true
-      # A Render roteia o HTTP para PORT. n8n escuta 5678 por padrão.
       - key: PORT
         value: "5678"
       - key: N8N_PORT
@@ -39,41 +37,36 @@ services:
         value: https
       - key: N8N_PROXY_HOPS
         value: "1"
-      # Task runner extra estoura os 512 MB do plano free.
       - key: N8N_RUNNERS_ENABLED
         value: "false"
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=384"
+        value: "--max-old-space-size=384 --dns-result-order=ipv4first"
       - key: DB_TYPE
         value: postgresdb
+      - key: SUPABASE_PROJECT_REF
+        value: togomiokchincpaspwao
       - key: DB_POSTGRESDB_HOST
-        fromDatabase:
-          name: n8n-db
-          property: host
+        value: aws-0-us-west-1.pooler.supabase.com
       - key: DB_POSTGRESDB_PORT
-        fromDatabase:
-          name: n8n-db
-          property: port
+        value: "5432"
       - key: DB_POSTGRESDB_DATABASE
-        fromDatabase:
-          name: n8n-db
-          property: database
+        value: postgres
       - key: DB_POSTGRESDB_USER
-        fromDatabase:
-          name: n8n-db
-          property: user
+        value: postgres.togomiokchincpaspwao
+      # Senha do Postgres do Supabase — só no Dashboard, nunca neste arquivo.
       - key: DB_POSTGRESDB_PASSWORD
-        fromDatabase:
-          name: n8n-db
-          property: password
-      # Host interno do Render: SSL não é exigido na rede privada.
+        sync: false
       - key: DB_POSTGRESDB_SSL_ENABLED
+        value: "true"
+      - key: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
         value: "false"
       - key: EXECUTIONS_DATA_PRUNE
         value: "true"
       - key: EXECUTIONS_DATA_MAX_AGE
         value: "168"
 
+# O Postgres n8n-db da Render ficou de legado. Não está mais ligado ao web service.
+# Pode apagar no Dashboard quando o n8n estiver estável no Supabase.
 databases:
   - name: n8n-db
     plan: free

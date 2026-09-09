@@ -31,9 +31,13 @@ Atalho equivalente: [render.com/deploy](https://render.com/deploy?repo=https://g
 | Recurso | Nome | Plano |
 | --- | --- | --- |
 | Web service (Docker `n8nio/n8n`) | `n8n` | free |
-| Postgres | `n8n-db` | free (expira em 30 dias) |
+| Banco | **Supabase** projeto `n8n` (Session pooler IPv4) | free |
 
-O entrypoint liga o n8n em `0.0.0.0:$PORT` (porta injetada pelo Render) e define `WEBHOOK_URL` a partir de `RENDER_EXTERNAL_URL`. Timezone: `America/Sao_Paulo`. `N8N_ENCRYPTION_KEY` é gerada pelo Render (`generateValue`) e **não deve ser alterada** depois do primeiro deploy.
+O Postgres `n8n-db` da Render ficou de legado (não está ligado ao app). O n8n usa o pooler `aws-0-us-west-1.pooler.supabase.com` porque o host direto do Supabase é IPv6 e a Render não alcança.
+
+A senha do banco **não vai no git**. Ela fica em Environment → `DB_POSTGRESDB_PASSWORD` no Dashboard. O entrypoint monta o usuário `postgres.<project-ref>` a partir de `SUPABASE_PROJECT_REF`.
+
+O entrypoint liga o n8n em `0.0.0.0:$PORT` e define `WEBHOOK_URL` a partir de `RENDER_EXTERNAL_URL`. Timezone: `America/Sao_Paulo`. `N8N_ENCRYPTION_KEY` é gerada pelo Render (`generateValue`) e **não deve ser alterada** depois do primeiro deploy.
 
 ## Primeiro acesso
 
