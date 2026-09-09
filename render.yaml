@@ -1,0 +1,68 @@
+# n8n self-hosted no Render (este repositório apenas — não misturar com outros apps).
+#
+# Plano free no Blueprint:
+# - Web service free dorme após 15 minutos de inatividade (cold start na próxima request).
+# - Postgres grátis expira em 30 dias. Faça upgrade antes disso se for usar de verdade.
+#
+# Apply: https://dashboard.render.com/blueprint/new?repo=https://github.com/RobsonFounar/N8N
+
+services:
+  - type: web
+    name: n8n
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    envVars:
+      # NÃO altere N8N_ENCRYPTION_KEY depois do primeiro deploy:
+      # credenciais criptografadas ficam ilegíveis se a chave mudar.
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+      - key: TZ
+        value: America/Sao_Paulo
+      - key: GENERIC_TIMEZONE
+        value: America/Sao_Paulo
+      - key: N8N_LISTEN_ADDRESS
+        value: "0.0.0.0"
+      - key: N8N_PROTOCOL
+        value: https
+      - key: N8N_PROXY_HOPS
+        value: "1"
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-db
+          property: host
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-db
+          property: port
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-db
+          property: database
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-db
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-db
+          property: password
+      # Host interno do Render: SSL não é exigido na rede privada.
+      - key: DB_POSTGRESDB_SSL_ENABLED
+        value: "false"
+      - key: EXECUTIONS_DATA_PRUNE
+        value: "true"
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: "168"
+
+databases:
+  - name: n8n-db
+    plan: free
+    databaseName: n8n
+    user: n8n
+    # Só a rede interna do Render (o web service n8n) acessa o banco.
+    ipAllowList: []
