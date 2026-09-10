@@ -37,10 +37,21 @@ services:
         value: https
       - key: N8N_PROXY_HOPS
         value: "1"
+      # 1.x ainda aceita desligar runners. No 2.x isso é ignorado e o processo morre em 512 MB.
       - key: N8N_RUNNERS_ENABLED
         value: "false"
+      - key: N8N_DIAGNOSTICS_ENABLED
+        value: "false"
+      - key: N8N_VERSION_NOTIFICATIONS_ENABLED
+        value: "false"
+      - key: N8N_TEMPLATES_ENABLED
+        value: "false"
+      - key: EXECUTIONS_DATA_SAVE_ON_SUCCESS
+        value: none
+      - key: DB_POSTGRESDB_POOL_SIZE
+        value: "2"
       - key: NODE_OPTIONS
-        value: "--max-old-space-size=384 --dns-result-order=ipv4first"
+        value: "--max-old-space-size=320 --dns-result-order=ipv4first"
       - key: DB_TYPE
         value: postgresdb
       - key: SUPABASE_PROJECT_REF

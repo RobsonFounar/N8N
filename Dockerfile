@@ -1,4 +1,5 @@
-FROM n8nio/n8n:latest
+# latest (2.x) estoura os 512 MB do plano free da Render (task runners sempre ligados).
+FROM n8nio/n8n:1.107.4
 
 USER root
 COPY docker-entrypoint.sh /custom-entrypoint.sh
